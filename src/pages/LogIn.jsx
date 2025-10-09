@@ -1,13 +1,21 @@
 // LoginPage.jsx
 import AuthLayout from "../components/AuthLayout";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 function LogIn() {
     const navigate = useNavigate();
 
+    const userDetails = {
+        email: "lktoroitich@gmail.com",
+        password: "password123"
+    };
+
     return (
         <AuthLayout title="Log In">
+
             <div className="flex flex-col w-[90%] lg:w-[75%] gap-[40px] sm:p-[20px]">
+
                 {/* FORM TITLE */}
                 <div className="flex flex-col">
                     <h1 className="text-black font-bold text-[25px] sm:text-[35px]">Welcome Back To Yapper!</h1>
@@ -64,6 +72,7 @@ function LogIn() {
 
                 {/* DON'T HAVE AN ACCOUNT */}
                 <p className="text-center">Don’t have and account? <span className="font-semibold cursor-pointer" onClick={() => navigate('/signup')}>Sign up</span></p>
+            
             </div>
             
         </AuthLayout>
