@@ -1,15 +1,38 @@
 // LoginPage.jsx
 import AuthLayout from "../components/AuthLayout";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from 'axios';
+
 
 function LogIn() {
-    const navigate = useNavigate();
 
-    const userDetails = {
-        email: "lktoroitich@gmail.com",
-        password: "password123"
-    };
+    const navigate = useNavigate();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    // HANDLE FORM SUBMISSION TO LOG IN THE USER
+    async function handleSubmit(e) {
+        e.preventDefault();
+        setError("");
+        setLoading(true);
+        // SEND A POST REQUEST TO LOGIN THE USER
+        try {
+            const res = await axios.post('http://127.0.0.1:8000/api/logIn', { email, password });
+            console.log(res.data);
+            // SAVE THE AUTH TOKEN IN LOCAL STORAGE
+            localStorage.setItem('auth_token', res.data.token);
+            // NAVIGATE TO CHAT PAGE
+            navigate('/chat');
+        } catch (err) {
+            console.log(err.response.data);
+            setError(err.response?.data?.message || "An error occurred. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    }
 
     return (
         <AuthLayout title="Log In">
@@ -23,21 +46,37 @@ function LogIn() {
                 </div>
 
                 {/* FORM */}
-                <form action="" method="post" className="flex flex-col gap-[20px]">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-[20px]">
                     {/* EMAIL */}
-                    <div class="flex flex-col">
-                        <label type="text" for="email" class="text-gray-700 text-[15px]">Email</label>
-                        <div class="flex flex-col">
-                            <input required type="string" id="email" placeholder="Enter your email" class="text-[16px] px-3 py-4 w-full font-light border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ffd903] focus:border-transparent"/>
+                    <div className="flex flex-col">
+                        <label type="text" htmlFor="email" className="text-gray-700 text-[15px]">Email</label>
+                        <div className="flex flex-col">
+                            <input
+                                required
+                                onChange={(e) => setEmail(e.target.value)}
+                                value={email}
+                                type="email"
+                                id="email"
+                                autoComplete="email"
+                                placeholder="Enter your email"
+                                className="text-[16px] px-3 py-4 w-full font-light border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ffd903] focus:border-transparent"/>
                         </div>
                     </div>
 
                     {/* PASSWORD */}
-                    <div class="flex flex-col">
-                        <label required for="password" class="text-gray-700 text-[15px]">Password</label>
-                        <div class="relative">
-                            <input required type="password" id="password" placeholder="Enter your password" class="text-[16px] w-full font-light px-3 py-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ffd903] focus:border-transparent pr-16" />
-                            <button type="button" id="togglePassword" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
+                    <div className="flex flex-col">
+                        <label required htmlFor="password" className="text-gray-700 text-[15px]">Password</label>
+                        <div className="relative">
+                            <input 
+                                required
+                                onChange={(e) => setPassword(e.target.value)}
+                                value={password}
+                                type="password"
+                                id="password"
+                                placeholder="Enter your password"
+                                autoComplete="current-password"
+                                className="text-[16px] w-full font-light px-3 py-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ffd903] focus:border-transparent pr-16" />
+                            <button type="button" id="togglePassword" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
                                 <svg 
                                     xmlns="http://www.w3.org/2000/svg" 
                                     height="24px" 
@@ -51,22 +90,23 @@ function LogIn() {
                     </div>
 
                     {/* LOG IN */}
-                    <button type="submit" data-toggle-password class="w-full bg-gradient-to-r from-[#ffd903] to-[#ffe54f] text-black p-3 rounded-lg transition-all hover:shadow-sm duration-500ms cursor-pointer">
+                    <button type="submit" data-toggle-password className="w-full bg-gradient-to-r from-[#ffd903] to-[#ffe54f] text-black p-3 rounded-lg transition-all hover:shadow-sm duration-500ms cursor-pointer">
                         Login
                     </button>
+                    {error && <p className="text-red-500">{error}</p>}
 
                 </form>
 
                 {/* DIVIDER */}
-                <div class="flex justify-center items-center gap-4 w-full">
-                    <hr class="w-1/2 border-black"/>
+                <div className="flex justify-center items-center gap-4 w-full">
+                    <hr className="w-1/2 border-black"/>
                     <p>or</p>
-                    <hr class="w-1/2 border-black"/>
+                    <hr className="w-1/2 border-black"/>
                 </div>
 
                 {/* SIGN UP WITH GOOLE */}
-                <button class="flex gap-2 justify-center items-center w-full text-black p-3 rounded-lg border border-black duration-500 cursor-pointer">
-                    <img src="/google.svg" alt="google" class="w-[20px] h-[20px]"/>
+                <button className="flex gap-2 justify-center items-center w-full text-black p-3 rounded-lg border border-black duration-500 cursor-pointer">
+                    <img src="/google.svg" alt="google" className="w-[20px] h-[20px]"/>
                     <p>Continue with Google</p>
                 </button>
 
